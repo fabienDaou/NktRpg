@@ -2,6 +2,7 @@ buildscript {
     ext.kotlin_version = '1.2.10'
     ext.ktor_version = '0.9.1' // Web application framework
     ext.exposed_version = '0.10.1' // Kotlin Sql library
+    ext.mysql_version = '5.1.6' // MySql connector
 
     repositories {
         mavenCentral()
@@ -30,6 +31,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "io.ktor:ktor-server-netty:$ktor_version"
     compile "org.jetbrains.exposed:exposed:$exposed_version"
+    compile group: 'mysql', name: 'mysql-connector-java', version: "$mysql_version"
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 

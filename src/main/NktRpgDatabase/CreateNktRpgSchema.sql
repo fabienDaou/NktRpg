@@ -12,3 +12,13 @@ CREATE TABLE Events (
     PRIMARY KEY(id),
     FOREIGN KEY (session_id) REFERENCES Sessions(id)
 );
+
+CREATE TABLE Comments (
+    id INT NOT NULL AUTO_INCREMENT,
+    event_id INT NOT NULL,
+    date DATETIME NOT NULL,
+    username VARCHAR(20),
+    content VARCHAR(500),
+    PRIMARY KEY(id),
+    FOREIGN KEY (event_id) REFERENCES Events(id)
+);

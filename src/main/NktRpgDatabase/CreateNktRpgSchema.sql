@@ -16,11 +16,13 @@ CREATE TABLE Events (
 CREATE TABLE Comments (
     id INT NOT NULL AUTO_INCREMENT,
     event_id INT NOT NULL,
+    parent_id INT NULL,
     date DATETIME NOT NULL,
     username VARCHAR(20),
     content VARCHAR(500),
     PRIMARY KEY(id),
     FOREIGN KEY (event_id) REFERENCES Events(id)
+    FOREIGN KEY (parent_id) REFERENCES Comments(id)
 );
 
 CREATE TABLE SessionPlayers (

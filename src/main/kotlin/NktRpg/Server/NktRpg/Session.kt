@@ -1,6 +1,6 @@
 package NktRpg.Server.NktRpg
 
-class Session(val title: String, val date: Long = System.currentTimeMillis()){
+data class Session(val title: String, val date: Long = System.currentTimeMillis()){
     var id: Int = 0
         private set
 

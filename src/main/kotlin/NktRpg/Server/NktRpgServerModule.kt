@@ -1,47 +1,67 @@
 package NktRpg.Server
 
-import NktRpg.Server.NktRpg.Event
-import NktRpg.Server.NktRpg.Session
+import NktRpg.Server.CommunicationInterfaces.*
+import NktRpg.Server.NktRpg.*
 import NktRpg.Server.SqlStore.NktRpgSqlStore
 import io.ktor.application.*
 import io.ktor.features.*
+import io.ktor.gson.gson
 import io.ktor.http.*
+import io.ktor.request.receive
 import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Application.nktRpgServerModule() {
     install(DefaultHeaders)
-    install(CallLogging)
+    install(ContentNegotiation) { gson { setPrettyPrinting() } }
+    install(StatusPages) { exception<Throwable> { cause -> call.respond(HttpStatusCode.InternalServerError) } }
     install(Routing) {
-        get("/events"){
-            var event = Event("Netherlands", "Description")
-            call.respondText("${event.date} / ${event.location}", ContentType.Text.Html)
-        }
-        get("/sessions"){
-            var session = Session("Montroc")
-            call.respondText("${session.date} / ${session.title}", ContentType.Text.Html)
+        post("/session") {
+            val newSession = call.receive<Session>()
+            val newSessionId = NktRpgSqlStore().add(newSession)
+            when (newSessionId) {
+                null -> {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+                else -> {
+                    call.respond(HttpStatusCode.Created, SessionCreatedResponse(newSessionId))
+                }
+            }
         }
 
-        // TODO("post instead")
-        get("/addSession"){
-            var session = Session("Montroc")
-            try {
-                NktRpgSqlStore().add(session)
-                call.respondText("success", ContentType.Text.Html)
-            }
-            catch (ex: Throwable){
-                call.respond(HttpStatusCode.InternalServerError)
+        post("/event") {
+            val newEvent = call.receive<Event>()
+            val newEventId = NktRpgSqlStore().add(newEvent)
+            when (newEventId) {
+                null -> {
+                    call.respond(HttpStatusCode.BadRequest)
+                }
+                else -> {
+                    call.respond(HttpStatusCode.Created, EventCreatedResponse(newEventId))
+                }
             }
         }
-        get("/sessions"){
-            try {
-                var appendedSessions = StringBuilder()
-                val listOfSessions = NktRpgSqlStore().getSessions()
-                listOfSessions.forEach{ appendedSessions.append(it) } // TODO("does not append for whatever reason")
-                call.respondText(appendedSessions.toString(), ContentType.Text.Html)
+
+        get("/sessions") {
+            val listOfSessions = NktRpgSqlStore().getSessions()
+            call.respond(HttpStatusCode.OK, listOfSessions)
+        }
+
+        get("/events/session/{sessionId}") {
+            try{
+                val sessionId = call.parameters["sessionId"]?.toInt()
+                when (sessionId) {
+                    null -> {
+                        call.respond(HttpStatusCode.BadRequest)
+                    }
+                    else -> {
+                        val listOfEvents = NktRpgSqlStore().getEventsBySessionId(sessionId)
+                        call.respond(HttpStatusCode.OK, listOfEvents)
+                    }
+                }
             }
             catch (ex: Throwable){
-                call.respond(HttpStatusCode.InternalServerError)
+                call.respondText(ex.message!!)
             }
         }
     }

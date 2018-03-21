@@ -3,20 +3,33 @@ buildscript {
     ext.ktor_version = '0.9.1' // Web application framework
     ext.exposed_version = '0.10.1' // Kotlin Sql library
     ext.postgresql_version = '42.2.2' // Postgresql driver
+    ext.nktrpg_version = '1.0-ALPHA'
 
     repositories {
         mavenCentral()
     }
+
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 group 'NktRpg'
-version '1.0-SNAPSHOT'
+version "$nktrpg_version"
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
+
+jar {
+    baseName = "nktrpg-server"
+    version = "$nktrpg_version"
+    manifest {
+        attributes 'Main-Class': 'NktRpg.Server.NktRpgServerKt'
+    }
+
+    // This creates a fat jar.
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+}
 
 sourceCompatibility = 1.8
 
@@ -33,12 +46,8 @@ dependencies {
     compile "io.ktor:ktor-gson:$ktor_version"
     compile "org.jetbrains.exposed:exposed:$exposed_version"
     compile group: 'org.postgresql', name: 'postgresql', version: "$postgresql_version"
-    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
 compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }

@@ -1,0 +1,1 @@
+web: java -jar build/libs/nktrpg-server-1.0-ALPHA.jar

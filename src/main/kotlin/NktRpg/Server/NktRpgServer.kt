@@ -17,7 +17,7 @@ fun main(args: Array<String>) {
         val name = System.getenv()["DATABASE_NAME"]
         val user = System.getenv()["DATABASE_USER"]
         val password = System.getenv()["DATABASE_PASSWORD"]
-        val serverPort = System.getenv()["NKTRPG_SERVER_PORT"]
+        val serverPort = System.getenv()["PORT"]
 
         val sqlConnection = PostgreSqlConnection(user!!, password!!, host!!, port!!.toInt(), name!!)
         val store = NktRpgSqlStore(sqlConnection)

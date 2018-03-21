@@ -27,7 +27,7 @@ class NktRpgSqlStore(private val sqlConnection: ISqlConnection): INktRpgStore {
         return null
     }
 
-    suspend override fun add(session: Session): Int? {
+    suspend override fun add(session: Session): Int {
         var sessionId: Int? = null
 
         sqlConnection.connect()
@@ -37,7 +37,7 @@ class NktRpgSqlStore(private val sqlConnection: ISqlConnection): INktRpgStore {
                 it[title] = session.title
             } get Sessions.id
         }
-        return sessionId
+        return sessionId!!
     }
 
     suspend override fun getSessions(): Iterable<Session> {

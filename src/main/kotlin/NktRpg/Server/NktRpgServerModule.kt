@@ -19,14 +19,7 @@ fun Application.nktRpgServerModule(store: INktRpgStore) {
         post("/session") {
             val newSession = call.receive<Session>()
             val newSessionId = store.add(newSession)
-            when (newSessionId) {
-                null -> {
-                    call.respond(HttpStatusCode.BadRequest)
-                }
-                else -> {
-                    call.respond(HttpStatusCode.Created, SessionCreatedResponse(newSessionId))
-                }
-            }
+            call.respond(HttpStatusCode.Created, SessionCreatedResponse(newSessionId))
         }
 
         post("/event") {

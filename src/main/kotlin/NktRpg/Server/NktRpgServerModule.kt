@@ -2,7 +2,7 @@ package NktRpg.Server
 
 import NktRpg.Server.CommunicationInterfaces.*
 import NktRpg.Server.NktRpg.*
-import NktRpg.Server.SqlStore.NktRpgSqlStore
+import NktRpg.Server.Store.INktRpgStore
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.gson.gson
@@ -11,14 +11,14 @@ import io.ktor.request.receive
 import io.ktor.response.*
 import io.ktor.routing.*
 
-fun Application.nktRpgServerModule() {
+fun Application.nktRpgServerModule(store: INktRpgStore) {
     install(DefaultHeaders)
     install(ContentNegotiation) { gson { setPrettyPrinting() } }
     install(StatusPages) { exception<Throwable> { cause -> call.respond(HttpStatusCode.InternalServerError) } }
     install(Routing) {
         post("/session") {
             val newSession = call.receive<Session>()
-            val newSessionId = NktRpgSqlStore().add(newSession)
+            val newSessionId = store.add(newSession)
             when (newSessionId) {
                 null -> {
                     call.respond(HttpStatusCode.BadRequest)
@@ -31,7 +31,7 @@ fun Application.nktRpgServerModule() {
 
         post("/event") {
             val newEvent = call.receive<Event>()
-            val newEventId = NktRpgSqlStore().add(newEvent)
+            val newEventId = store.add(newEvent)
             when (newEventId) {
                 null -> {
                     call.respond(HttpStatusCode.BadRequest)
@@ -43,7 +43,7 @@ fun Application.nktRpgServerModule() {
         }
 
         get("/sessions") {
-            val listOfSessions = NktRpgSqlStore().getSessions()
+            val listOfSessions = store.getSessions()
             call.respond(HttpStatusCode.OK, listOfSessions)
         }
 
@@ -55,7 +55,7 @@ fun Application.nktRpgServerModule() {
                         call.respond(HttpStatusCode.BadRequest)
                     }
                     else -> {
-                        val listOfEvents = NktRpgSqlStore().getEventsBySessionId(sessionId)
+                        val listOfEvents = store.getEventsBySessionId(sessionId)
                         call.respond(HttpStatusCode.OK, listOfEvents)
                     }
                 }

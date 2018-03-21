@@ -7,17 +7,13 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-class NktRpgSqlStore : INktRpgStore {
-    // TODO("Get rid off username/password. pass them as argument to the server.")
-    private val user = ""
-    private val password = ""
-
+class NktRpgSqlStore(private val sqlConnection: ISqlConnection): INktRpgStore {
     suspend override fun add(event: Event): Int? {
         if (event.sessionId != null) {
             var newEventId: Int? = null
             val nonNullSessionId = event.sessionId!!
 
-            NktRpgConnection(user, password).connect()
+            sqlConnection.connect()
             transaction {
                 newEventId = Events.insert {
                     it[sessionId] = nonNullSessionId
@@ -34,7 +30,7 @@ class NktRpgSqlStore : INktRpgStore {
     suspend override fun add(session: Session): Int? {
         var sessionId: Int? = null
 
-        NktRpgConnection(user, password).connect()
+        sqlConnection.connect()
         transaction {
             sessionId = Sessions.insert {
                 it[date] = DateTime(session.date)
@@ -47,7 +43,7 @@ class NktRpgSqlStore : INktRpgStore {
     suspend override fun getSessions(): Iterable<Session> {
         val listOfSessions = mutableListOf<Session>()
 
-        NktRpgConnection(user, password).connect()
+        sqlConnection.connect()
         transaction {
             Sessions.selectAll().forEach {
                 var session = Session(it[Sessions.id], it[Sessions.title], it[Sessions.date].millis)
@@ -59,9 +55,8 @@ class NktRpgSqlStore : INktRpgStore {
 
     suspend override fun getEventsBySessionId(sessionId: Int): Iterable<Event> {
         val listOfEvents = mutableListOf<Event>()
-
-        NktRpgConnection(user, password).connect()
-       transaction {
+        sqlConnection.connect()
+        transaction {
             Events.select { Events.sessionId.eq(sessionId) }.forEach {
                 var event = Event(it[Events.id], it[Events.sessionId], it[Events.location], it[Events.description], it[Events.date].millis)
                 listOfEvents.add(event)

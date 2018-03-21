@@ -8,7 +8,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
 class NktRpgSqlStore: INktRpgStore {
-
     // TODO("Get rid off username/password. pass them as argument to the server.")
     private val user = ""
     private val password = ""
@@ -48,6 +47,12 @@ class NktRpgSqlStore: INktRpgStore {
     }
 
     suspend override fun getEventsBySessionId(sessionId: Int): Iterable<Event> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        NktRpgConnection(user, password).connect()
+        val listOfEvents = mutableListOf<Event>()
+        Events.select { Events.sessionId.eq(sessionId) }.forEach {
+            var event = Event(it[Events.id], it[Events.sessionId], it[Events.location], it[Events.description], it[Events.date].millis)
+            listOfEvents.add(event)
+        }
+        return listOfEvents
     }
 }

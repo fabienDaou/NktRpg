@@ -17,7 +17,7 @@ class NktRpgSqlStore(private val sqlConnection: ISqlConnection): INktRpgStore {
             transaction {
                 newEventId = Events.insert {
                     it[sessionId] = nonNullSessionId
-                    it[date] = DateTime(event.date)
+                    it[date] = DateTime(System.currentTimeMillis())
                     it[location] = event.location
                     it[description] = event.description
                 } get Events.id
@@ -33,7 +33,7 @@ class NktRpgSqlStore(private val sqlConnection: ISqlConnection): INktRpgStore {
         sqlConnection.connect()
         transaction {
             sessionId = Sessions.insert {
-                it[date] = DateTime(session.date)
+                it[date] = DateTime(System.currentTimeMillis())
                 it[title] = session.title
             } get Sessions.id
         }

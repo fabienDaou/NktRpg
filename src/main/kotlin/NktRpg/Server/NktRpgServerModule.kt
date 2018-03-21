@@ -14,7 +14,7 @@ import io.ktor.routing.*
 fun Application.nktRpgServerModule(store: INktRpgStore) {
     install(DefaultHeaders)
     install(ContentNegotiation) { gson { setPrettyPrinting() } }
-    install(StatusPages) { exception<Throwable> { cause -> call.respond(HttpStatusCode.InternalServerError) } }
+    install(StatusPages) { exception<Throwable> { _ -> call.respond(HttpStatusCode.InternalServerError) } }
     install(Routing) {
         post("/session") {
             val newSession = call.receive<Session>()
@@ -41,7 +41,7 @@ fun Application.nktRpgServerModule(store: INktRpgStore) {
         }
 
         get("/events/session/{sessionId}") {
-            try{
+            try {
                 val sessionId = call.parameters["sessionId"]?.toInt()
                 when (sessionId) {
                     null -> {
@@ -52,8 +52,7 @@ fun Application.nktRpgServerModule(store: INktRpgStore) {
                         call.respond(HttpStatusCode.OK, listOfEvents)
                     }
                 }
-            }
-            catch (ex: Throwable){
+            } catch (ex: Throwable) {
                 call.respondText(ex.message!!)
             }
         }

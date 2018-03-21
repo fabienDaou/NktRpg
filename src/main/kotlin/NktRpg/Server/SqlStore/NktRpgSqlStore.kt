@@ -7,7 +7,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-class NktRpgSqlStore(private val sqlConnection: ISqlConnection): INktRpgStore {
+class NktRpgSqlStore(private val sqlConnection: ISqlConnection) : INktRpgStore {
     suspend override fun add(event: Event): Int? {
         if (event.sessionId != null) {
             var newEventId: Int? = null

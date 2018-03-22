@@ -1,7 +1,7 @@
 package NktRpg.Server
 
 import NktRpg.Server.CommunicationInterfaces.*
-import NktRpg.Server.NktRpg.*
+import NktRpg.Server.NktRpgModel.*
 import NktRpg.Server.Store.INktRpgStore
 import io.ktor.application.*
 import io.ktor.features.*

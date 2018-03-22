@@ -1,7 +1,7 @@
 package NktRpg.Server.SqlStore
 
-import NktRpg.Server.NktRpg.Event
-import NktRpg.Server.NktRpg.Session
+import NktRpg.Server.NktRpgModel.Event
+import NktRpg.Server.NktRpgModel.Session
 import NktRpg.Server.Store.INktRpgStore
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction

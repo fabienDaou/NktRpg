@@ -1,7 +1,7 @@
 package NktRpg.Server.Store
 
-import NktRpg.Server.NktRpg.Event
-import NktRpg.Server.NktRpg.Session
+import NktRpg.Server.NktRpgModel.Event
+import NktRpg.Server.NktRpgModel.Session
 
 interface INktRpgStore{
     suspend fun add(event: Event): Int?

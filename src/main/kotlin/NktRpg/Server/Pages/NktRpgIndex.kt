@@ -8,20 +8,42 @@ class NktRpgIndex(private val sessions: Iterable<Session>) : Template<HTML> {
     override fun HTML.apply() {
         head {
             title { +"NktRpg" }
-            style("text/css") {
+            style(type="text/css") {
                 +"a.session-ref {text-decoration: none;}"
                 +"a.session-ref:hover {text-decoration: underline;}"
             }
             script(type = ScriptType.textJavaScript) {
                 unsafe { // héhé
                     raw("""
-                            function GetEventsBySessionId(id)
-                            {
+                            function FillEventList(sessionId) {
+                                var events = GetEventsBySession(sessionId);
+                                var eventListTag = document.getElementById("event-list-div");
+                                ClearChildrenTags(eventListTag);
+
+                                for (var i = 0; i < events.length; i++) {
+                                    AppendEventTo(events[i], eventListTag);
+                                }
+
+                            }
+
+                            function GetEventsBySession(sessionId) {
                                 var xmlHttp = new XMLHttpRequest();
-                                xmlHttp.open( "GET", "https://nktrpg.herokuapp.com/events/session/"+id, false );
-                                xmlHttp.send( null );
-                                console.log(xmlHttp.responseText);
-                            }"""
+                                xmlHttp.open("GET", "http://localhost:9000/events/session/"+sessionId, false);
+                                xmlHttp.send(null);
+                                return JSON.parse(xmlHttp.responseText);
+                            }
+
+                            function ClearChildrenTags(parentTag) {
+                                parentTag.innerHTML = '';
+                            }
+
+                            function AppendEventTo(event, parentTag) {
+                                var pre = document.createElement("pre");
+                                var content = document.createTextNode(event.description);
+                                pre.appendChild(content);
+                                parentTag.appendChild(pre);
+                            }
+                            """
                     )
                 }
             }
@@ -33,11 +55,11 @@ class NktRpgIndex(private val sessions: Iterable<Session>) : Template<HTML> {
             style += "font-family:Courier New;"
             style += "font-size:90%"
 
-            div("wrapper") {
+            div(classes="wrapper") {
                 style = "max-width:90%;"
                 style += "margin:auto;"
 
-                div("column-session") {
+                div(classes="column-session") {
                     style = "margin:20px auto 0px auto;"
                     style = "width:300px;"
                     style += "float:left;"
@@ -48,7 +70,7 @@ class NktRpgIndex(private val sessions: Iterable<Session>) : Template<HTML> {
                         +"List of sessions"
                     }
 
-                    div {
+                    div(classes = "session-list") {
                         style = "color:rgb(192, 192, 192);"
 
                         for (session in sessions) {
@@ -58,7 +80,7 @@ class NktRpgIndex(private val sessions: Iterable<Session>) : Template<HTML> {
                                 style += "text-decoration:none;"
 
                                 a(classes = "session-ref") {
-                                    onClick = "GetEventsBySessionId("+session.id+")"
+                                    onClick = "FillEventList("+session.id+")"
 
                                     +session.title
                                 }
@@ -66,13 +88,18 @@ class NktRpgIndex(private val sessions: Iterable<Session>) : Template<HTML> {
                         }
                     }
                 }
-                div("column-event") {
+                div(classes="column-event") {
                     style = "overflow:hidden;"
 
                     div {
                         style = "font-weight:bold;"
 
                         +"List of events"
+                    }
+
+                    div{
+                        id="event-list-div"
+                        style = "color:rgb(192, 192, 192);"
                     }
                 }
             }

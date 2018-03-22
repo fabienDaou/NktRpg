@@ -8,6 +8,23 @@ class NktRpgIndex(private val sessions: Iterable<Session>) : Template<HTML> {
     override fun HTML.apply() {
         head {
             title { +"NktRpg" }
+            style("text/css") {
+                +"a.session-ref {text-decoration: none;}"
+                +"a.session-ref:hover {text-decoration: underline;}"
+            }
+            script(type = ScriptType.textJavaScript) {
+                unsafe { // héhé
+                    raw("""
+                            function GetEventsBySessionId(id)
+                            {
+                                var xmlHttp = new XMLHttpRequest();
+                                xmlHttp.open( "GET", "https://nktrpg.herokuapp.com/events/session/"+id, false );
+                                xmlHttp.send( null );
+                                console.log(xmlHttp.responseText);
+                            }"""
+                    )
+                }
+            }
         }
 
         body {
@@ -16,27 +33,48 @@ class NktRpgIndex(private val sessions: Iterable<Session>) : Template<HTML> {
             style += "font-family:Courier New;"
             style += "font-size:90%"
 
-            div("column-session") {
-                style = "margin:20px auto 0px auto;"
-                style += "max-width:90%;"
+            div("wrapper") {
+                style = "max-width:90%;"
+                style += "margin:auto;"
 
-                div {
-                    style = "font-weight:bold;"
+                div("column-session") {
+                    style = "margin:20px auto 0px auto;"
+                    style = "width:300px;"
+                    style += "float:left;"
 
-                    +"List of sessions"
-                }
+                    div {
+                        style = "font-weight:bold;"
 
-                div {
-                    style="color:rgb(192, 192, 192);"
+                        +"List of sessions"
+                    }
 
-                    for (session in sessions) {
-                        pre {
-                            +session.title
+                    div {
+                        style = "color:rgb(192, 192, 192);"
+
+                        for (session in sessions) {
+                            pre {
+                                style = "word-break:break-all;"
+                                style += "white-space: pre-wrap;"
+                                style += "text-decoration:none;"
+
+                                a(classes = "session-ref") {
+                                    onClick = "GetEventsBySessionId("+session.id+")"
+
+                                    +session.title
+                                }
+                            }
                         }
                     }
                 }
-            }
-            div("column-event") {
+                div("column-event") {
+                    style = "overflow:hidden;"
+
+                    div {
+                        style = "font-weight:bold;"
+
+                        +"List of events"
+                    }
+                }
             }
         }
     }

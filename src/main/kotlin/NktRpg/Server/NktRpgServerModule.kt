@@ -14,7 +14,7 @@ import io.ktor.routing.*
 fun Application.nktRpgServerModule(store: INktRpgStore) {
     install(DefaultHeaders)
     install(CORS) {
-        anyHost()
+        host("nkt.herokuapp.com", schemes = listOf("https"), subDomains = listOf("www"))
     }
     install(ContentNegotiation) { gson { setPrettyPrinting() } }
     install(StatusPages) { exception<Throwable> { _ -> call.respond(HttpStatusCode.InternalServerError) } }

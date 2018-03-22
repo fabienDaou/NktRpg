@@ -13,6 +13,10 @@ import io.ktor.routing.*
 
 fun Application.nktRpgServerModule(store: INktRpgStore) {
     install(DefaultHeaders)
+    install(CORS){
+        host("nkt.herokuapp.com")
+        host("nktrpg.herokuapp.com")
+    }
     install(ContentNegotiation) { gson { setPrettyPrinting() } }
     install(StatusPages) { exception<Throwable> { _ -> call.respond(HttpStatusCode.InternalServerError) } }
     install(Routing) {

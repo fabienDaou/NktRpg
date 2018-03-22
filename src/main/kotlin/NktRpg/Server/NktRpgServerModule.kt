@@ -13,7 +13,9 @@ import io.ktor.routing.*
 
 fun Application.nktRpgServerModule(store: INktRpgStore) {
     install(DefaultHeaders)
-    install(CORS)
+    install(CORS) {
+        anyHost()
+    }
     install(ContentNegotiation) { gson { setPrettyPrinting() } }
     install(StatusPages) { exception<Throwable> { _ -> call.respond(HttpStatusCode.InternalServerError) } }
     install(Routing) {

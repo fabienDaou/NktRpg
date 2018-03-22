@@ -13,7 +13,18 @@ import io.ktor.routing.*
 
 fun Application.nktRpgServerModule(store: INktRpgStore) {
     install(DefaultHeaders)
-    install(CORS){
+    install(CORS) {
+        header(HttpHeaders.CacheControl)
+        header(HttpHeaders.ContentLanguage)
+        header(HttpHeaders.ContentType)
+        header(HttpHeaders.Expires)
+        header(HttpHeaders.LastModified)
+        header(HttpHeaders.Pragma)
+
+        method(HttpMethod.Get)
+        method(HttpMethod.Post)
+        header(HttpHeaders.AccessControlAllowOrigin)
+
         host("nkt.herokuapp.com")
         host("nktrpg.herokuapp.com")
     }

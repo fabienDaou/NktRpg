@@ -1,6 +1,8 @@
 buildscript {
-    ext.kotlin_version = '1.2.10'
+    ext.kotlin_version = '1.2.21'
+    ext.kotlin_coroutine_version = '0.22.5'
     ext.ktor_version = '0.9.1' // Web application framework
+    ext.ktor_html_builder_version = '0.3.0'
     ext.exposed_version = '0.10.1' // Kotlin Sql library
     ext.postgresql_version = '42.2.2' // Postgresql driver
     ext.nktrpg_version = '1.0-ALPHA'
@@ -20,6 +22,12 @@ version "$nktrpg_version"
 apply plugin: 'java'
 apply plugin: 'kotlin'
 
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
+}
+
 jar {
     baseName = "nktrpg-server"
     version = "$nktrpg_version"
@@ -38,13 +46,18 @@ repositories {
     maven { url "https://dl.bintray.com/kotlin/kotlinx" }
     maven { url "https://dl.bintray.com/kotlin/ktor" }
     maven { url "https://dl.bintray.com/kotlin/exposed" }
+    maven { url "https://dl.bintray.com/kotlin/kotlinx.html" }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutine_version"
+    compile "org.jetbrains.exposed:exposed:$exposed_version"
+
     compile "io.ktor:ktor-server-netty:$ktor_version"
     compile "io.ktor:ktor-gson:$ktor_version"
-    compile "org.jetbrains.exposed:exposed:$exposed_version"
+    compile "io.ktor:ktor-html-builder:$ktor_version"
+
     compile group: 'org.postgresql', name: 'postgresql', version: "$postgresql_version"
 }
 

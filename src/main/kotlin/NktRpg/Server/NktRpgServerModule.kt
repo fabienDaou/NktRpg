@@ -17,6 +17,7 @@ fun Application.nktRpgServerModule(store: INktRpgStore) {
     install(ContentNegotiation) { gson { setPrettyPrinting() } }
     install(StatusPages) { exception<Throwable> { _ -> call.respond(HttpStatusCode.InternalServerError) } }
     install(Routing) {
+        getBase(store)
         createSession(store)
         createEvent(store)
         getSessions(store)

@@ -28,7 +28,7 @@ class NktRpgIndex(private val sessions: Iterable<Session>) : Template<HTML> {
 
                             function GetEventsBySession(sessionId) {
                                 var xmlHttp = new XMLHttpRequest();
-                                xmlHttp.open("GET", "http://localhost:9000/events/session/"+sessionId, false);
+                                xmlHttp.open("GET", "https://nktrpg.herokuapp.com/events/session/"+sessionId, false);
                                 xmlHttp.send(null);
                                 return JSON.parse(xmlHttp.responseText);
                             }
